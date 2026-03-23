@@ -3,12 +3,12 @@
 *
 */
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/services/storage_service.dart';
 import '../utils/defai_themes.dart';
 import '../utils/global.dart';
 import '../utils/storage_keys.dart';
@@ -33,12 +33,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (!mounted) return;
 
     // Read onboarding state AFTER delay — provider is stable by now
-    final isDone = await StorageService().getKey(
-      StorageKeys.onboardingComplete,
-    );
+    final storage = StorageService();
+    final onboardingDone = await storage.getKey(StorageKeys.onboardingComplete);
+    final mnemonic = await storage.getMnemonic();
     if (!mounted) return;
 
-    isDone == 'true' ? context.go('/login') : context.go('/onboarding');
+    if (onboardingDone != 'true') {
+      context.go('/onboarding');
+    } else if (mnemonic == null) {
+      // Onboarding done but no vault — send to registration
+      context.go('/registration');
+    } else {
+      // Has vault — send to login
+      context.go('/login');
+    }
   }
 
   @override

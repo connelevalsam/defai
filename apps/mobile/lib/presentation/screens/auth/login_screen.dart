@@ -12,6 +12,7 @@ import '../../../core/providers/auth_provider.dart';
 import '../../../core/services/identity_service.dart';
 import '../../../core/services/storage_service.dart';
 import '../../../utils/defai_themes.dart';
+import '../../../utils/storage_keys.dart';
 import 'widgets/biometric_card.dart';
 import 'widgets/error_banner.dart';
 import 'widgets/restore_toggle.dart';
@@ -38,7 +39,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
   void initState() {
     super.initState();
     // Auto-trigger biometric on load — returning user expects this
-    WidgetsBinding.instance.addPostFrameCallback((_) => _unlockWithBiometric());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkAndUnlock());
   }
 
   @override
@@ -69,6 +70,16 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
     /*else {
       setState(() => _errorMessage = 'Biometric authentication failed.');
     }*/
+  }
+
+  Future<void> _checkAndUnlock() async {
+    // Only auto-trigger if user previously enrolled biometric
+    final biometricEnabled = await StorageService().getKey(
+      StorageKeys.biometricEnabled,
+    );
+    if (biometricEnabled == 'true') {
+      _unlockWithBiometric();
+    }
   }
 
   // ── Seed phrase restore ────────────────────────────────────────────────────

@@ -9,9 +9,15 @@ import 'package:go_router/go_router.dart';
 
 import '../presentation/error_screen.dart';
 import '../presentation/onboarding_screen.dart';
+import '../presentation/screens/auth/biometric_setup_screen.dart';
+import '../presentation/screens/auth/login_screen.dart';
 import '../presentation/screens/auth/register_screen.dart';
 import '../presentation/screens/auth/seed_backup_screen.dart';
 import '../presentation/screens/auth/seed_verify_screen.dart';
+import '../presentation/screens/dashboard/agent/agent_screen.dart';
+import '../presentation/screens/dashboard/asset/asset_screen.dart';
+import '../presentation/screens/dashboard/home/home_screen.dart';
+import '../presentation/screens/dashboard/profile/profile_screen.dart';
 import '../presentation/screens/dashboard/profile/transaction_history_screen.dart';
 import '../presentation/screens/index_screen.dart';
 import '../presentation/screens/widgets/privacy_guard.dart';

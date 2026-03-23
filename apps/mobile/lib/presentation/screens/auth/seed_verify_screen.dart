@@ -9,7 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/services/api_service.dart';
 import '../../../core/services/storage_service.dart';
+import '../../../utils/storage_keys.dart';
 
 class SeedVerifyScreen extends ConsumerStatefulWidget {
   final String mnemonic;
@@ -46,18 +48,6 @@ class _SeedVerifyScreenState extends ConsumerState<SeedVerifyScreen> {
     });
   }
 
-  /*void _finishRegistration() async {
-    final mnemonic = widget.mnemonic;
-
-    await StorageService().saveKey('vault_mnemonic', mnemonic);
-
-    ref.read(authProvider.notifier).completeRegistration();
-
-    if (mounted) {
-      context.go('/dashboard');
-    }
-  }*/
-
   Future<void> _finalizeVault() async {
     setState(() => _isProcessing = true);
 
@@ -65,10 +55,10 @@ class _SeedVerifyScreenState extends ConsumerState<SeedVerifyScreen> {
       // 1. Save the mnemonic securely — NOT a derived key
       await StorageService().saveMnemonic(widget.mnemonic);
 
-      // 2. Init vault via Rust bridge (WDK)
-      // This consumes the mnemonic inside Rust — Dart never holds keys
-      // final vault = initWallet(mnemonic: widget.mnemonic);
-      // await StorageService().saveKey(StorageKeys.vaultAddress, vault.address);
+      // 2. Init vault (WDK)
+      final api = ref.read(apiServiceProvider);
+      final vault = await api.initWallet(widget.mnemonic);
+      await StorageService().saveKey(StorageKeys.vaultAddress, vault.address);
 
       // 3. Mark registration complete
       ref.read(authProvider.notifier).completeRegistration();

@@ -88,10 +88,14 @@ class _BiometricGateScreenState extends ConsumerState<BiometricGateScreen> {
           if (!mounted) return;
         }
         setState(() => _state = _GateState.success);
-        await Future.delayed(const Duration(milliseconds: 900));
+        await Future.delayed(const Duration(milliseconds: 600));
         if (!mounted) return;
+
         ref.read(authProvider.notifier).completeRegistration();
-        context.go('/dashboard');
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) context.go('/dashboard');
+        });
       } else {
         // Cancelled silently — let user retry
         setState(() => _state = _GateState.idle);
@@ -165,7 +169,7 @@ class _BiometricGateScreenState extends ConsumerState<BiometricGateScreen> {
                           size: 80,
                         )
                         .animate(
-                          key: ValueKey(_state),
+                          key: ValueKey('icon_$_state'),
                           onPlay: (c) => _state == _GateState.idle
                               ? c.repeat()
                               : c.forward(),
@@ -178,18 +182,20 @@ class _BiometricGateScreenState extends ConsumerState<BiometricGateScreen> {
               const SizedBox(height: 32),
 
               Text(
-                _state == _GateState.success
-                    ? "UNLOCKED"
-                    : _state == _GateState.error
-                    ? "AUTH FAILED"
-                    : _state == _GateState.authenticating
-                    ? "AUTHENTICATING..."
-                    : _mode == _ScreenMode.setup
-                    ? "SECURE YOUR VAULT"
-                    : "VAULT LOCKED",
-                style: Theme.of(context).textTheme.headlineSmall,
-                textAlign: TextAlign.center,
-              ).animate(key: ValueKey(_state)).fadeIn(duration: 300.ms),
+                    _state == _GateState.success
+                        ? "UNLOCKED"
+                        : _state == _GateState.error
+                        ? "AUTH FAILED"
+                        : _state == _GateState.authenticating
+                        ? "AUTHENTICATING..."
+                        : _mode == _ScreenMode.setup
+                        ? "SECURE YOUR VAULT"
+                        : "VAULT LOCKED",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                  )
+                  .animate(key: ValueKey('title_$_state'))
+                  .fadeIn(duration: 300.ms),
 
               const SizedBox(height: 12),
 

@@ -120,6 +120,12 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
                   if (agentState.status == AgentStatus.success)
                     _successBanner(),
 
+                  // ── Success Confirmation ──────────────────────
+                  if (agentState.status == AgentStatus.error)
+                    _errorBanner(
+                      agentState.errorMessage ?? 'Something went wrong.',
+                    ),
+
                   const SizedBox(height: 32),
 
                   // ── Command Input ─────────────────────────────
@@ -247,6 +253,46 @@ class _AgentScreenState extends ConsumerState<AgentScreen> {
           const SizedBox(height: 6),
           Text(
             'Your Sentinel agent is now monitoring and executing autonomously.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: NeonColors.textGrey,
+              fontSize: 12,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 600.ms).scaleXY(begin: 0.95, end: 1.0);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Error Banner
+  // ─────────────────────────────────────────────────────────────────────────────
+  Widget _errorBanner(String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: NeonColors.neonPink.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: NeonColors.neonPink.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.error_outline, color: Colors.greenAccent, size: 36),
+          const SizedBox(height: 10),
+          const Text(
+            'STRATEGY LIVE ON LIQUID',
+            style: TextStyle(
+              color: NeonColors.neonPink,
+              fontSize: 12,
+              letterSpacing: 2,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            message,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: NeonColors.textGrey,
